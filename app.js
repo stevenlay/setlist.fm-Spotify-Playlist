@@ -18,6 +18,8 @@ app.get("/", function(req, res) {
 });
 
 app.post("/", function(req, res) {
+    console.log(req.body.artist);
+    console.log(req.body.tour);
     var headers = {
         'Accept': 'application/json',
         'x-api-key': api_key
@@ -28,17 +30,24 @@ app.post("/", function(req, res) {
         headers: headers
     };
     
+    var data, set;
+
+    var counter = 0;
     function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
+        if (!error) {
             var data = JSON.parse(body);
-            (data['setlist'].forEach(function(set) {
-                console.log(set.artist.name);    
-            }));
+            data['setlist'].forEach(function(set) {
+                if(set.sets.set.length > 0) {
+                    console.log(set.sets);
+                }  
+            });
+        } else {
+            console.log("ERROR");
         }
     }
     
     request(options, callback); 
-    res.send(req.body.artist + " " + req.body.tour);
+    res.render("results", {data:data, artist: req.body.artist, tour: req.body.tour});
 });
 
 
