@@ -1,0 +1,25 @@
+{
+  "name": "setlistspotify",
+  "version": "1.0.0",
+  "description": "setlist.fm to spotify",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevenlay/setlist.fm-Spotify-Playlist.git"
+  },
+  "author": "steven",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stevenlay/setlist.fm-Spotify-Playlist/issues"
+  },
+  "homepage": "https://github.com/stevenlay/setlist.fm-Spotify-Playlist#readme",
+  "dependencies": {
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.2",
+    "querystring": "^0.2.0",
+    "request": "^2.83.0"
+  }
+}
