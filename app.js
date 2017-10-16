@@ -29,25 +29,25 @@ app.post("/", function(req, res) {
         url: 'https://api.setlist.fm/rest/1.0/search/setlists?artistName=' + req.body.artist + '&p=1&tourName=' + req.body.tour,
         headers: headers
     };
-    
-    var data, set;
-
-    var counter = 0;
+    var data = [], counter = 0;
     function callback(error, response, body) {
         if (!error) {
-            var data = JSON.parse(body);
-            data['setlist'].forEach(function(set) {
-                if(set.sets.set.length > 0) {
-                    console.log(set.sets);
-                }  
+            data = JSON.parse(body);
+            data.setlist.forEach(function(sets) {
+                var actualSet = sets.sets.set;
+                if(actualSet.length > 0) {
+                    actualSet.forEach(function(song) {
+                        console.log(song);
+                    });
+                    //console.log(actualSet['song']); 
+                }
             });
+            res.render("results", {data:data, artist: req.body.artist, tour:req.body.tour});
         } else {
             console.log("ERROR");
         }
     }
-    
-    request(options, callback); 
-    res.render("results", {data:data, artist: req.body.artist, tour: req.body.tour});
+    request(options, callback);
 });
 
 
