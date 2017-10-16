@@ -5,5 +5,14 @@
     Tour: <%= tour %>
 </h3>
 <p>
-
+   <% data.setlist.forEach(function(sets) { %>
+        <% var actualSet = sets.sets.set; %>
+        <% if(actualSet.length > 0) { %>
+         <%   actualSet.forEach(function(songlist) { %>
+         <ol>  <% songlist["song"].forEach(function(song) { %>
+             <li><%= song.name %></li>
+        <% }) %> </ol>
+       <%     }); %>
+     <%   } %>
+   <% }); %>
 </p>
