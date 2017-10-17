@@ -36,11 +36,16 @@ app.post("/", function(req, res) {
             data.setlist.forEach(function(sets) {
                 var actualSet = sets.sets.set;
                 if(actualSet.length > 0) {
-                    actualSet.forEach(function(song) {
-                        if(song.encore) {
-                            console.log(song.song);
+                    actualSet.forEach(function(songList) {
+                        if(songList.encore) {
+                            //console.log(songList.song);
+                            songList['song'].forEach(function(song) {
+                                    console.log(songList.song);
+                            });
                         } else {
-                            console.log(song);
+                            songList['song'].forEach(function(song) {
+                                    console.log(song);
+                            });
                         }       
                      });
                     //console.log(actualSet['song']); 
