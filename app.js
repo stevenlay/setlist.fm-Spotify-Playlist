@@ -37,8 +37,12 @@ app.post("/", function(req, res) {
                 var actualSet = sets.sets.set;
                 if(actualSet.length > 0) {
                     actualSet.forEach(function(song) {
-                        console.log(song);
-                    });
+                        if(song.encore) {
+                            console.log(song.song);
+                        } else {
+                            console.log(song);
+                        }       
+                     });
                     //console.log(actualSet['song']); 
                 }
             });
