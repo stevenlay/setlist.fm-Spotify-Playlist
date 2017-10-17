@@ -33,24 +33,33 @@ app.post("/", function(req, res) {
     function callback(error, response, body) {
         if (!error) {
             data = JSON.parse(body);
-            data.setlist.forEach(function(sets) {
-                var actualSet = sets.sets.set;
-                if(actualSet.length > 0) {
-                    actualSet.forEach(function(songList) {
-                        if(songList.encore) {
-                            //console.log(songList.song);
-                            songList['song'].forEach(function(song) {
-                                    console.log(songList.song);
-                            });
-                        } else {
-                            songList['song'].forEach(function(song) {
-                                    console.log(song);
-                            });
-                        }       
-                     });
+            console.log(data.message);
+            if(data.message === 'not found') {
+                console.log("ERROR CAUGHT");
+                res.render("error", {artist: req.body.artist, tour:req.body.tour});
+            }
+            // data.setlist.forEach(function(sets) {
+            //     var actualSet = sets.sets.set;
+            //     if(actualSet.length > 0) {
+            //         actualSet.forEach(function(songList) {
+            //             if(songList.encore) {
+            //                 //console.log(songList.song);
+            //                 if(songList['song']) {
+            //                     songList['song'].forEach(function(song) {
+            //                         console.log(songList);
+            //                     })
+            //                 }
+            //             } else {
+            //                 if(songList['song']) {
+            //                     songList['song'].forEach(function(song) {
+            //                         console.log(song);
+            //                     });
+            //                 }
+            //             }       
+            //          });
                     //console.log(actualSet['song']); 
-                }
-            });
+            //    }
+            //});
             res.render("results", {data:data, artist: req.body.artist, tour:req.body.tour});
         } else {
             console.log("ERROR");
