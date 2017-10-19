@@ -38,6 +38,7 @@ var generateRandomString = function(length) {
 var stateKey = 'spotify_auth_stat';
 
 app.get("/", function(req, res) {
+    map = {}, encore_map = {}
     res.render("search");
 });
 
@@ -61,7 +62,7 @@ app.post("/", function(req, res) {
             console.log(data.message);
             if(data.message === 'not found') {
                 console.log("ERROR CAUGHT");
-                res.render("error", {artist: req.body.artist, tour:req.body.tour});
+                return res.redirect("/error");
             } else {
                 data.setlist.forEach(function(sets) {
                     var actualSet = sets.sets.set;
@@ -121,6 +122,9 @@ app.get('/login', function(req, res) {
         }));
     });
 
+app.get('/error', function(req, res) {
+    res.render('error');
+});
 
 app.listen(8080, function() {
     console.log("listening on 8080");
