@@ -37,31 +37,32 @@ app.post("/", function(req, res) {
             if(data.message === 'not found') {
                 console.log("ERROR CAUGHT");
                 res.render("error", {artist: req.body.artist, tour:req.body.tour});
-            }
-            data.setlist.forEach(function(sets) {
-                var actualSet = sets.sets.set;
-                if(actualSet.length > 0) {
-                    actualSet.forEach(function(songList) {
-                        if(songList.encore) {
-                            //console.log(songList.song);
-                            if(songList['song']) {
-                                songList['song'].forEach(function(song) {
-                                    songList.song.forEach(function(song) {
-                                            console.log(song.name);
+            } else {
+                data.setlist.forEach(function(sets) {
+                    var actualSet = sets.sets.set;
+                    if(actualSet.length > 0) {
+                        actualSet.forEach(function(songList) {
+                            if(songList.encore) {
+                                //console.log(songList.song);
+                                if(songList['song']) {
+                                    songList['song'].forEach(function(song) {
+                                        songList.song.forEach(function(song) {
+                                                console.log(song.name);
+                                        });
+                                    })
+                                }
+                            } else {
+                                if(songList['song']) {
+                                    songList['song'].forEach(function(song) {
+                                        console.log(song.name);
                                     });
-                                })
+                                }
                             }
-                        } else {
-                            if(songList['song']) {
-                                songList['song'].forEach(function(song) {
-                                    console.log(song.name);
-                                });
-                            }
-                        }
-                        console.log();       
-                     });
-               }
-            });
+                            console.log();       
+                         });
+                   }
+                });
+            }
             res.render("results", {data:data, artist: req.body.artist, tour:req.body.tour});
         } else {
             console.log("ERROR");
