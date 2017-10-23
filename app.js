@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 var client_id = client.client_id
     client_secret = client.client_secret,
     api_key = client.api_key,
-    redirect_uri = 'localhost:8080';
+    redirect_uri = 'localhost:8080/callback';
 
 var spotifyApi = new SpotifyWebApi({
     client_id, client_secret, redirect_uri
@@ -24,18 +24,6 @@ var map = {},
     data = [],
     artist = "",
     tour = "";
-
-var generateRandomString = function(length) {
-    var text = '';
-    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      
-    for (var i = 0; i < length; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-};
-      
-var stateKey = 'spotify_auth_stat';
 
 app.get("/", function(req, res) {
     map = {}, encore_map = {}
@@ -107,20 +95,54 @@ app.get("/results", function(req, res) {
 
 app.get('/login', function(req, res) {
     
-      var state = generateRandomString(16);
-      res.cookie(stateKey, state);
-    
       // your application requests authorization
-      var scope = 'user-read-private user-read-email';
       res.redirect('https://accounts.spotify.com/authorize?' +
         querystring.stringify({
-          response_type: 'code',
           client_id: client_id,
-          scope: scope,
-          redirect_uri: redirect_uri,
-          state: state
+          response_type: 'code',
+          redirect_uri: 'localhost:8080/callback',
         }));
+});
+
+app.get('/callback', function(req, res) {
+    var code = req.query.code || null;
+    var authOptions = {
+        url: 'https://accounts.spotify.com/api/token',
+        form: {
+            code: code,
+            redirect_uri: redirect_uri,
+            grant_type: 'authorization_code'
+        },
+        headers: {
+            'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
+        },
+        json: true
+    };
+    request.post(authOptions, function(error, response, body) {
+        if (!error && response.statusCode === 200) {
+            var access_token = body.access_token,
+                refresh_token = body.resfresh_token;
+            var options = {
+                url: 'https://api.spotify.com/v1/me',
+                headers: {'Authorization': 'Bearer ' + access_token},
+                json:true
+            };
+            request.get(options, function(error,response, body) {
+                console.log(body);
+            });
+            res.redirect('/#' +
+                querystring.stringify({
+                    access_token: access_token,
+                    refresh_token: refresh_token
+                }));
+        } else {
+            res.redirect('/#' + 
+            querystring.stringify({
+                error: 'invalid token'
+            }));
+        }
     });
+});
 
 app.get('/error', function(req, res) {
     res.render('error');
