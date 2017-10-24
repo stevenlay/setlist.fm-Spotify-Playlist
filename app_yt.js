@@ -4,8 +4,8 @@ var express = require('express'),
     querystring = require('querystring'),
     cookieParser = require('cookie-parser'),
     client = require('./lib/client.js'),
-
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    SpotifyWebApi = require('spotify-web-api-node');
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended:true}));
@@ -14,6 +14,10 @@ var client_id = client.client_id
     client_secret = client.client_secret,
     api_key = client.api_key,
     redirect_uri = 'localhost:8080/callback';
+
+var spotifyApi = new SpotifyWebApi({
+    client_id, client_secret, redirect_uri
+});
 
 var map = {},
     encore_map = {},
@@ -90,19 +94,54 @@ app.get("/results", function(req, res) {
 });
 
 app.get('/login', function(req, res) {
-    res.redirect('https://accounts.google.com/o/oauth2/v2/auth?' +
-    querystring.stringify({
-        client_id: client_id,
-        redirect_uri: 'http://localhost:8080/results',
-        scope: 'https://www.googleapis.com/auth/youtube',
-        access_type: 'online',
-        prompt: 'consent',
-        response_type: 'code'
-    }));
+    
+      // your application requests authorization
+      res.redirect('https://accounts.spotify.com/authorize?' +
+        querystring.stringify({
+          client_id: client_id,
+          response_type: 'code',
+          redirect_uri: 'localhost:8080/callback',
+        }));
 });
 
 app.get('/callback', function(req, res) {
-    res.render('callback');
+    var code = req.query.code || null;
+    var authOptions = {
+        url: 'https://accounts.spotify.com/api/token',
+        form: {
+            code: code,
+            redirect_uri: redirect_uri,
+            grant_type: 'authorization_code'
+        },
+        headers: {
+            'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
+        },
+        json: true
+    };
+    request.post(authOptions, function(error, response, body) {
+        if (!error && response.statusCode === 200) {
+            var access_token = body.access_token,
+                refresh_token = body.resfresh_token;
+            var options = {
+                url: 'https://api.spotify.com/v1/me',
+                headers: {'Authorization': 'Bearer ' + access_token},
+                json:true
+            };
+            request.get(options, function(error,response, body) {
+                console.log(body);
+            });
+            res.redirect('/#' +
+                querystring.stringify({
+                    access_token: access_token,
+                    refresh_token: refresh_token
+                }));
+        } else {
+            res.redirect('/#' + 
+            querystring.stringify({
+                error: 'invalid token'
+            }));
+        }
+    });
 });
 
 app.get('/error', function(req, res) {
