@@ -21,6 +21,7 @@
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
+    "oauth": "^0.9.15",
     "querystring": "^0.2.0",
     "request": "^2.83.0",
     "spotify-web-api-node": "^2.5.0"

@@ -4,7 +4,7 @@ var express = require('express'),
     querystring = require('querystring'),
     cookieParser = require('cookie-parser'),
     client = require('./lib/client.js'),
-
+    OAuth = require('oauth'),
     bodyParser = require('body-parser');
 
 app.set("view engine", "ejs");
@@ -13,7 +13,8 @@ app.use(bodyParser.urlencoded({extended:true}));
 var client_id = client.client_id
     client_secret = client.client_secret,
     api_key = client.api_key,
-    redirect_uri = 'localhost:8080/callback';
+    redirect_uri = 'localhost:8080/callback',
+    authCode = "";
 
 var map = {},
     encore_map = {},
@@ -95,33 +96,23 @@ app.get('/login', function(req, res) {
         client_id: client_id,
         redirect_uri: 'http://localhost:8080/callback',
         scope: 'https://www.googleapis.com/auth/youtube',
-        access_type: 'online',
         prompt: 'consent',
         response_type: 'code',
+        access_type: 'offline'
     }));
 });
 
 app.get('/callback', function(req, res) {
         console.log(req.query.code);
-        var authCode = req.query.code;
-        var options = {
-            method: 'POST',
-            url:'https://www.googleapis.com/oauth2/v4/token', 
-            headers: {Accept: 'application/x-www-form-urlencoded'},
-            code: authCode,
-            client_id: client_id,
-            client_secret: client_secret,
-            redirect_uri: 'http://localhost:8080/results',
-            grant_type: 'authorization_code'
-        };
-    
+        authCode = req.query.code;
+        var url = "https://www.googleapis.com";
+        url += '/oauth2/v4/token?code=' + authCode + '&client_id=' + client_id + '&client_secret=' + client_secret + '&redirect_uri=http://localhost:8080/callback&grant_type=authorization_code'
         function callback(err, response, body) {
                 console.log(body);
                 res.render('callback');
         
         }
-
-        request(options,callback);
+        request.post({url: url},callback);
     });
 app.get('/error', function(req, res) {
     res.render('error');
