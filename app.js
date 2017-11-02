@@ -14,7 +14,8 @@ var client_id = client.client_id
     client_secret = client.client_secret,
     api_key = client.api_key,
     redirect_uri = 'localhost:8080/callback',
-    authCode = "";
+    authCode = "",
+    auth_token = "";
 
 var map = {},
     encore_map = {},
@@ -109,11 +110,17 @@ app.get('/callback', function(req, res) {
         url += '/oauth2/v4/token?code=' + authCode + '&client_id=' + client_id + '&client_secret=' + client_secret + '&redirect_uri=http://localhost:8080/callback&grant_type=authorization_code'
         function callback(err, response, body) {
                 console.log(body);
+                auth_token = JSON.parse(body).access_token;
+                console.log(auth_token);
                 res.render('callback');
         
         }
         request.post({url: url},callback);
     });
+
+app.post('/callback', function(req, res) {
+    res.render('success');
+});
 app.get('/error', function(req, res) {
     res.render('error');
 });
