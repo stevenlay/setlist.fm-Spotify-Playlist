@@ -91,7 +91,7 @@ app.get("/results", function(req, res) {
     res.render("results", {artist: artist, tour: tour, data: data});
 });
 
-app.get('/login', function(req, res) {
+app.get('/loginyt', function(req, res) {
     res.redirect('https://accounts.google.com/o/oauth2/v2/auth?' +
     querystring.stringify({
         client_id: client_id,
@@ -101,6 +101,10 @@ app.get('/login', function(req, res) {
         response_type: 'code',
         access_type: 'offline'
     }));
+});
+
+app.get('/loginspotify', function(req, res) {
+    res.render('callback');
 });
 
 app.get('/callback', function(req, res) {
