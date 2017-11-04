@@ -13,6 +13,8 @@ app.use(bodyParser.urlencoded({extended:true}));
 var client_id = client.client_id
     client_secret = client.client_secret,
     api_key = client.api_key,
+    spotify_id = client.spotify_id,
+    spotify_secret = client.spotify_secret,
     redirect_uri = 'localhost:8080/callback',
     authCode = "",
     auth_token = "";
@@ -104,14 +106,19 @@ app.get('/loginyt', function(req, res) {
 });
 
 app.get('/loginspotify', function(req, res) {
-    res.render('callback');
+    res.redirect('https://accounts.spotify.com/authorize?' +
+    querystring.stringify({
+        client_id: spotify_id,
+        response_type: 'code',
+        redirect_uri: 'http://localhost:8080/callback'
+    }));
 });
 
-app.get('/callback', function(req, res) {
+app.get('/callbackgoogle', function(req, res) {
         console.log(req.query.code);
         authCode = req.query.code;
         var url = "https://www.googleapis.com";
-        url += '/oauth2/v4/token?code=' + authCode + '&client_id=' + client_id + '&client_secret=' + client_secret + '&redirect_uri=http://localhost:8080/callback&grant_type=authorization_code'
+        url += '/oauth2/v4/token?code=' + authCode + '&client_id=' + client_id + '&client_secret=' + client_secret + '&redirect_uri=http://localhost:8080/callback&grant_type=authorization_code';
         function callback(err, response, body) {
                 console.log(body);
                 auth_token = JSON.parse(body).access_token;
@@ -120,6 +127,30 @@ app.get('/callback', function(req, res) {
         
         }
         request.post({url: url},callback);
+    });
+
+    app.get('/callback', function(req, res) {
+        authCode = req.query.code;
+        console.log(authCode);
+        var url = 'https://accounts.spotify.com/api/token';
+        var header = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        var options = {
+            'client_id': spotify_id,
+            'header': header,
+            'client_secret': spotify_secret,
+            'grant_type': 'authorization_code',
+            'code': authCode,
+            'redirect_uri': 'http://localhost:8080/callback'
+        }
+        function callback(err, response, body) {
+            console.log(body);
+            auth_token = JSON.parse(body).access_token;
+            console.log(auth_token);
+            res.render('callback');
+        }
+        request.post(url, options, callback);
     });
 
 app.post('/callback', function(req, res) {
