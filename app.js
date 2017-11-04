@@ -153,7 +153,7 @@ app.get('/callbackgoogle', function(req, res) {
         axios({
             url: 'https://accounts.spotify.com/api/token',
             method: 'post',
-            params: {
+            data: {
                 grant_type: 'authorization code',
                 code: authCode,
                 redirect_uri: 'http://localhost:8080/callback'
