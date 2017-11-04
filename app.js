@@ -134,15 +134,16 @@ app.get('/callbackgoogle', function(req, res) {
         console.log(authCode);
         var url = 'https://accounts.spotify.com/api/token';
         var header = {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json'
         }
         var options = {
-            'client_id': spotify_id,
-            'header': header,
-            'client_secret': spotify_secret,
-            'grant_type': 'authorization_code',
-            'code': authCode,
-            'redirect_uri': 'http://localhost:8080/callback'
+            client_id: spotify_id,
+            header: header,
+            client_secret: spotify_secret,
+            grant_type: 'authorization_code',
+            code: authCode,
+            redirect_uri: 'http://localhost:8080/callback'
         }
         function callback(err, response, body) {
             console.log(body);
