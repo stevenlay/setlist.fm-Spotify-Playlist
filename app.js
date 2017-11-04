@@ -6,11 +6,12 @@ var express = require('express'),
     client = require('./lib/client.js'),
     OAuth = require('oauth'),
     bodyParser = require('body-parser');
+'use strict';
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended:true}));
 
-var client_id = client.client_id
+var client_id = client.client_id,
     client_secret = client.client_secret,
     api_key = client.api_key,
     spotify_id = client.spotify_id,
@@ -18,7 +19,7 @@ var client_id = client.client_id
     redirect_uri = 'localhost:8080/callback',
     authCode = "",
     auth_token = "";
-
+var payload = new Buffer(spotify_id+":"+spotify_secret).toString("base64");
 var map = {},
     encore_map = {},
     data = [],
@@ -97,7 +98,7 @@ app.get('/loginyt', function(req, res) {
     res.redirect('https://accounts.google.com/o/oauth2/v2/auth?' +
     querystring.stringify({
         client_id: client_id,
-        redirect_uri: 'http://localhost:8080/callback',
+        redirect_uri: 'http://localhost:8080/callbackgooglegoogle',
         scope: 'https://www.googleapis.com/auth/youtube',
         prompt: 'consent',
         response_type: 'code',
@@ -133,25 +134,22 @@ app.get('/callbackgoogle', function(req, res) {
         authCode = req.query.code;
         console.log(authCode);
         var url = 'https://accounts.spotify.com/api/token';
-        var header = {
+        var headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Basic ' + payload,
             'Accept': 'application/json'
         }
         var options = {
-            client_id: spotify_id,
-            header: header,
-            client_secret: spotify_secret,
             grant_type: 'authorization_code',
             code: authCode,
-            redirect_uri: 'http://localhost:8080/callback'
-        }
+            redirect_uri: 'http://localhost:8080/callback',
+            json: true
+        };
         function callback(err, response, body) {
-            console.log(body);
-            auth_token = JSON.parse(body).access_token;
-            console.log(auth_token);
+            console.log("SPOTIFY CALLBACK: " +body);
             res.render('callback');
         }
-        request.post(url, options, callback);
+        request.post({url: url, body: options, headers: headers}, callback);
     });
 
 app.post('/callback', function(req, res) {
