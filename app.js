@@ -1,6 +1,7 @@
 var express = require('express'),
     app = express(),
     request = require('request'),
+    axios = require('axios'),
     querystring = require('querystring'),
     cookieParser = require('cookie-parser'),
     client = require('./lib/client.js'),
@@ -149,7 +150,22 @@ app.get('/callbackgoogle', function(req, res) {
             console.log("SPOTIFY CALLBACK: " +body);
             res.render('callback');
         }
-        request.post({url: url, body: options, headers: headers}, callback);
+        axios({
+            url: 'https://accounts.spotify.com/api/token',
+            method: 'post',
+            params: {
+                grant_type: 'authorization code',
+                code: authCode,
+                redirect_uri: 'http://localhost:8080/callback'
+            },
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(function(response) {
+            console.log(response)
+        }).catch(function(error) {
+        });
     });
 
 app.post('/callback', function(req, res) {
