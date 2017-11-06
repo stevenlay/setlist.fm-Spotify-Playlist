@@ -26,6 +26,7 @@ var map = {},
     encore_map = {},
     data = [],
     artist = "",
+    artist_id,
     tour = "";
 
 app.get("/", function(req, res) {
@@ -111,7 +112,7 @@ app.get('/loginyt', function(req, res) {
 app.get('/loginspotify', function(req, res) {
     res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
-        show_dialog: true,
+        show_dialog: false,
         client_id: spotify_id,
         response_type: 'code',
         redirect_uri: 'http://localhost:8080/callback'
@@ -169,7 +170,9 @@ app.post('/callback', function(req, res) {
         headers: headers
     };
     function callback(err, response, body) {
-        console.log(body);
+        body = JSON.parse(body);
+        var artist_id = (body.artists.items[0].id);
+        
         res.redirect('success');
     };
     request(options, callback);
