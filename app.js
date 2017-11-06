@@ -129,44 +129,29 @@ app.get('/callbackgoogle', function(req, res) {
         
         }
         request.post({url: url},callback);
-    });
+});
 
-    app.get('/callback', function(req, res) {
+app.get('/callback', function(req, res) {
         authCode = req.query.code;
         console.log(authCode);
-        var url = 'https://accounts.spotify.com/api/token';
         var headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + payload,
             'Accept': 'application/json'
         }
+
+        var dataString = 'grant_type=authorization_code&code=' + authCode + '&redirect_uri=http://localhost:8080/callback&client_id=' + spotify_id + '&client_secret=' + spotify_secret
         var options = {
-            grant_type: 'authorization_code',
-            code: authCode,
-            redirect_uri: 'http://localhost:8080/callback',
-            json: true
+            url: 'https://accounts.spotify.com/api/token',
+            method: 'POST',
+            headers: headers,
+            body: dataString,
         };
         function callback(err, response, body) {
-            console.log("SPOTIFY CALLBACK: " +body);
+                console.log("SPOTIFY CALLBACK: " + JSON.stringify(body));
             res.render('callback');
         }
-        axios({
-            url: 'https://accounts.spotify.com/api/token',
-            method: 'post',
-            data: {
-                grant_type: 'authorization code',
-                code: authCode,
-                redirect_uri: 'http://localhost:8080/callback'
-            },
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        }).then(function(response) {
-            console.log(response)
-        }).catch(function(error) {
-        });
-    });
+        request(options, callback);
+});
 
 app.post('/callback', function(req, res) {
     res.render('success');
