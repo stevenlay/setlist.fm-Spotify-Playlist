@@ -161,12 +161,15 @@ app.post('/callback', function(req, res) {
     var headers = {
         'Authorization': 'Bearer ' + spotify_token
     };
+
+    var url = `https://api.spotify.com/v1/search?q=${artist}&type=artist`
+    console.log("URL: " + url);
     var options = {
-        url: 'https://api.spotify.com/v1/search?q=${artist}&type=artist',
+        url: url,
         headers: headers
     };
     function callback(err, response, body) {
-        console.log(JSON.parse(body));
+        console.log(body);
         res.redirect('success');
     };
     request(options, callback);
