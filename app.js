@@ -20,6 +20,7 @@ var client_id = client.client_id,
     redirect_uri = 'localhost:8080/callback',
     authCode = "",
     auth_token = "";
+    spotify_token = "";
 var payload = new Buffer(spotify_id+":"+spotify_secret).toString("base64");
 var map = {},
     encore_map = {},
@@ -110,6 +111,7 @@ app.get('/loginyt', function(req, res) {
 app.get('/loginspotify', function(req, res) {
     res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
+        show_dialog: true,
         client_id: spotify_id,
         response_type: 'code',
         redirect_uri: 'http://localhost:8080/callback'
@@ -136,10 +138,11 @@ app.get('/callback', function(req, res) {
         console.log(authCode);
         var headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            'Authorization': 'Basic ' + payload
         }
 
-        var dataString = 'grant_type=authorization_code&code=' + authCode + '&redirect_uri=http://localhost:8080/callback&client_id=' + spotify_id + '&client_secret=' + spotify_secret
+        var dataString = 'grant_type=authorization_code&code=' + authCode + '&redirect_uri=http://localhost:8080/callback';
         var options = {
             url: 'https://accounts.spotify.com/api/token',
             method: 'POST',
@@ -147,7 +150,9 @@ app.get('/callback', function(req, res) {
             body: dataString,
         };
         function callback(err, response, body) {
-                console.log("SPOTIFY CALLBACK: " + JSON.stringify(body));
+            console.log("SPOTIFY CALLBACK: " + (body));
+            var spotify_token = JSON.parse(body).access_token;
+            console.log(spotify_token);
             res.render('callback');
         }
         request(options, callback);
