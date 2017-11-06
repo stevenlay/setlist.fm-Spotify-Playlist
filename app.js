@@ -169,13 +169,30 @@ app.post('/callback', function(req, res) {
         url: url,
         headers: headers
     };
-    function callback(err, response, body) {
+    function get_id(err, response, body) {
         body = JSON.parse(body);
         var artist_id = (body.artists.items[0].id);
-        
-        res.redirect('success');
+
+
+        var options = {
+            url: `https://api.spotify.com/v1/artists/${artist_id}/albums`,
+            headers: headers
+        }
+
+        function get_albums(err, response, body) {
+            console.log(body);
+            res.render('success');
+        }
+        request(options, get_albums);
+
+
+
+
+
+
+  
     };
-    request(options, callback);
+    request(options, get_id);
 });
 app.get('/error', function(req, res) {
     res.render('error');
