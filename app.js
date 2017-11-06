@@ -157,6 +157,20 @@ app.get('/callback', function(req, res) {
         request(options, callback);
 });
 
+app.post('/callback', function(req, res) {
+    var headers = {
+        'Authorization': 'Bearer ' + spotify_token
+    };
+    var options = {
+        url: 'https://api.spotify.com/v1/search?q=${artist}&type=artist',
+        headers: headers
+    };
+    function callback(err, response, body) {
+        console.log(JSON.parse(body));
+        res.redirect('success');
+    };
+    request(options, callback);
+});
 app.get('/error', function(req, res) {
     res.render('error');
 });
