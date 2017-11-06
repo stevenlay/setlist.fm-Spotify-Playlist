@@ -150,19 +150,19 @@ app.get('/callback', function(req, res) {
             body: dataString,
         };
         function callback(err, response, body) {
-            console.log("SPOTIFY CALLBACK: " + (body));
-            var spotify_token = JSON.parse(body).access_token;
-            console.log(spotify_token);
+            spotify_token = JSON.parse(body).access_token;
+            console.log("Spotify_TOKEN: " + spotify_token);
             res.render('callback');
         }
         request(options, callback);
 });
 
-app.post('/callback', function(req, res) {
-    res.render('success');
-});
 app.get('/error', function(req, res) {
     res.render('error');
+});
+
+app.get('/success', function(req, res) {
+    res.render('success');
 });
 
 app.listen(8080, function() {
