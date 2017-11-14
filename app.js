@@ -51,7 +51,7 @@ app.post("/", function(req, res) {
     function callback(error, response, body) {
         if (!error) {
             data = JSON.parse(body);
-            console.log(data.message);
+            //console.log(data.message);
             if(data.message === 'not found') {
                 console.log("ERROR CAUGHT");
                 return res.redirect("/error");
@@ -73,7 +73,7 @@ app.post("/", function(req, res) {
                             } else {
                                 if(songList['song']) {
                                     songList['song'].forEach(function(song) {
-                                        console.log(song.name);
+                                        //console.log(song.name);
                                         map[song.name] = (map[song.name]+1) || 1;
                                     });
                                 }
@@ -125,9 +125,9 @@ app.get('/callbackgoogle', function(req, res) {
         var url = "https://www.googleapis.com";
         url += '/oauth2/v4/token?code=' + authCode + '&client_id=' + client_id + '&client_secret=' + client_secret + '&redirect_uri=http://localhost:8080/callback&grant_type=authorization_code';
         function callback(err, response, body) {
-                console.log(body);
+                //console.log(body);
                 auth_token = JSON.parse(body).access_token;
-                console.log(auth_token);
+                //console.log(auth_token);
                 res.render('callback');
         
         }
@@ -180,14 +180,13 @@ app.post('/callback', function(req, res) {
         }
 
         function get_albums(err, response, body) {
+            console.log("\n");
+            console.log("\n");
+            console.log("\n");
             console.log(body);
             res.render('success');
         }
         request(options, get_albums);
-
-
-
-
 
 
   
