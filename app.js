@@ -65,7 +65,7 @@ app.post("/", function(req, res) {
                                 if(songList['song']) {
                                     songList['song'].forEach(function(song) {
                                         songList.song.forEach(function(song) {
-                                                console.log(song.name);
+                                                //console.log(song.name);
                                                 encore_map[song.name] = (encore_map[song.name]+1) || 1;
                                         });
                                     })
