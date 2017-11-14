@@ -183,7 +183,15 @@ app.post('/callback', function(req, res) {
             console.log("\n");
             console.log("\n");
             console.log("\n");
-            console.log(body);
+            //console.log(body);
+            body = JSON.parse(body);
+            body.items.forEach(function(item) {
+                var artists = item.artists;
+                artists.forEach(function(artist) {
+                    console.log(artist);
+                });
+            });
+
             res.render('success');
         }
         request(options, get_albums);
