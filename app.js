@@ -25,8 +25,9 @@ var payload = new Buffer(spotify_id+":"+spotify_secret).toString("base64");
 var map = {},
     encore_map = {},
     album_map = {},
+    single_map = {},
     data = [],
-    artist = "",
+    artist_name = "",
     artist_id,
     tour = "";
 
@@ -38,7 +39,7 @@ app.get("/", function(req, res) {
 app.post("/", function(req, res) {
     console.log(req.body.artist);
     console.log(req.body.tour);
-    artist = req.body.artist;
+    artist_name = req.body.artist;
     tour = req.body.tour;
     var headers = {
         'Accept': 'application/json',
@@ -46,7 +47,7 @@ app.post("/", function(req, res) {
     };
     
     var options = {
-        url: 'https://api.setlist.fm/rest/1.0/search/setlists?artistName=' + req.body.artist + '&p=1&tourName=' + req.body.tour,
+        url: 'https://api.setlist.fm/rest/1.0/search/setlists?artistName=' + artist_name + '&p=1&tourName=' + req.body.tour,
         headers: headers
     };
     function callback(error, response, body) {
@@ -95,7 +96,7 @@ app.post("/", function(req, res) {
 });
 
 app.get("/results", function(req, res) {
-    res.render("results", {artist: artist, tour: tour, data: data});
+    res.render("results", {artist: artist_name, tour: tour, data: data});
 });
 
 app.get('/loginyt', function(req, res) {
@@ -164,7 +165,7 @@ app.post('/callback', function(req, res) {
         'Authorization': 'Bearer ' + spotify_token
     };
 
-    var url = `https://api.spotify.com/v1/search?q=${artist}&type=artist`
+    var url = `https://api.spotify.com/v1/search?q=${artist_name}&type=artist`
     console.log("URL: " + url);
     var options = {
         url: url,
@@ -189,8 +190,18 @@ app.post('/callback', function(req, res) {
             body.items.forEach(function(item) {
                 var album_type = item.album_type;
                 var artist = item.artists;
-                console.log(album_type);
-                console.log(artist[0].name);
+
+                if(album_type === 'album' && artist[0].name === artist_name) {
+                    console.log(item.id);
+                    console.log(item.name);
+                   album_map[item.id] = item.name;
+                }
+                if (album_type === 'single' && artist[0].name === artist_name) {
+                    console.log(item.id);
+                    console.log(item.name);
+                    single_map[item.id] = item.name;
+                }
+                
             });
 
             res.render('success');
