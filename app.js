@@ -24,6 +24,7 @@ var client_id = client.client_id,
 var payload = new Buffer(spotify_id+":"+spotify_secret).toString("base64");
 var map = {},
     encore_map = {},
+    album_map = {},
     data = [],
     artist = "",
     artist_id,
@@ -188,7 +189,7 @@ app.post('/callback', function(req, res) {
             body.items.forEach(function(item) {
                 var artists = item.artists;
                 artists.forEach(function(artist) {
-                    console.log(artist);
+                    //console.log(artist);
                 });
             });
 
