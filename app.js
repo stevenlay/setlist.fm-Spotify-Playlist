@@ -184,13 +184,13 @@ app.post('/callback', function(req, res) {
             console.log("\n");
             console.log("\n");
             console.log("\n");
-            //console.log(body);
+            console.log(body);
             body = JSON.parse(body);
             body.items.forEach(function(item) {
-                var artists = item.artists;
-                artists.forEach(function(artist) {
-                    //console.log(artist);
-                });
+                var album_type = item.album_type;
+                var artist = item.artists;
+                console.log(album_type);
+                console.log(artist[0].name);
             });
 
             res.render('success');
