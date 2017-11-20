@@ -24,8 +24,8 @@ var client_id = client.client_id,
 var payload = new Buffer(spotify_id+":"+spotify_secret).toString("base64");
 var map = {},
     encore_map = {},
-    album_map = {},
-    single_map = {},
+    album_ids = [],
+    album_request = "",
     data = [],
     artist_name = "",
     artist_id,
@@ -192,17 +192,20 @@ app.post('/callback', function(req, res) {
                 var artist = item.artists;
 
                 if(album_type === 'album' && artist[0].name === artist_name) {
-                    console.log(item.id);
-                    console.log(item.name);
-                   album_map[item.id] = item.name;
+                    //console.log(item.id);
+                    //console.log(item.name);
+                   //album_map[item.id] = item.name;
+                   album_ids.push(item.id);
                 }
                 if (album_type === 'single' && artist[0].name === artist_name) {
-                    console.log(item.id);
-                    console.log(item.name);
-                    single_map[item.id] = item.name;
+                    //console.log(item.id);
+                    //console.log(item.name);
+                    //single_map[item.id] = item.name;
+                    album_ids.push(item.id);
                 }
-                
             });
+            album_request = album_ids.join(", ");
+            console.log(album_request);
 
             res.render('success');
         }
