@@ -204,10 +204,20 @@ app.post('/callback', function(req, res) {
                     album_ids.push(item.id);
                 }
             });
-            album_request = album_ids.join(", ");
+            album_request = album_ids.join(",");
             console.log(album_request);
+            var options = {
+                url: 'https://api.spotify.com/v1/albums/?ids=' + album_request,
+                headers: headers
+            };
 
-            res.render('success');
+            function get_tracks(err, response, body) {
+                console.log(body);
+                res.render('success');
+            };
+
+            request(options, get_tracks);
+            console.log()
         }
         request(options, get_albums);
 
