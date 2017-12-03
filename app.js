@@ -1,11 +1,8 @@
 var express = require('express'),
     app = express(),
     request = require('request'),
-    axios = require('axios'),
     querystring = require('querystring'),
-    cookieParser = require('cookie-parser'),
     client = require('./lib/client.js'),
-    OAuth = require('oauth'),
     bodyParser = require('body-parser');
 'use strict';
 
@@ -137,7 +134,6 @@ app.get('/callbackgoogle', function(req, res) {
                 auth_token = JSON.parse(body).access_token;
                 //console.log(auth_token);
                 res.render('callback');
-        
         }
         request.post({url: url},callback);
 });
@@ -177,6 +173,7 @@ app.post('/callback', function(req, res) {
         url: url,
         headers: headers
     };
+    
     function get_id(err, response, body) {
         body = JSON.parse(body);
         var artist_id = (body.artists.items[0].id);
