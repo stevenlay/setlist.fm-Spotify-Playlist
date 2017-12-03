@@ -30,6 +30,7 @@ var map = {},
     data = [],
     artist_name = "",
     artist_id,
+    user_id,
     tour = "";
 
 app.get("/", function(req, res) {
@@ -222,20 +223,31 @@ app.post('/callback', function(req, res) {
                     //console.log(albums[i].length;)
                     for (var numTrack = 0; numTrack < albums[i].tracks.total; numTrack++) {
                         var track_name = albums[i].tracks.items[numTrack].name;   
-                        var track_id = albums[i].tracks.items[numTrack].id; 
+                        var track_uri = albums[i].tracks.items[numTrack].uri; 
                         //console.log(track_name);
-                        song_ids[track_name] = track_id;              
+                        song_ids[track_name] = track_uri;              
                     }              
                 }
-                console.log(song_ids);
-                res.render('success');
+                //console.log(song_ids);
+                var options = {
+                    url: 'https://api.spotify.com/v1/me',
+                    headers: headers
+                };
+
+                function get_user(err, response, body) {
+                    body = JSON.parse(body);
+                    user_id = body.id;
+                    console.log(user_id);
+                    res.render('success');
+                }
+                request(options, get_user);
+                
             };
 
             request(options, get_tracks);
             console.log()
         }
         request(options, get_albums);
-
 
   
     };
