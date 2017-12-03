@@ -57,37 +57,41 @@ app.post("/", function(req, res) {
     function callback(error, response, body) {
         if (!error) {
             data = JSON.parse(body);
-            //console.log(data.message);
+            console.log(data.message);
             if(data.message === 'not found') {
                 console.log("ERROR CAUGHT");
                 return res.redirect("/error");
             } else {
-                data.setlist.forEach(function(sets) {
-                    var actualSet = sets.sets.set;
-                    if(actualSet.length > 0) {
-                        actualSet.forEach(function(songList) {
-                            if(songList.encore) {
-                                //console.log(songList.song);
-                                if(songList['song']) {
-                                    songList['song'].forEach(function(song) {
-                                        songList.song.forEach(function(song) {
-                                                //console.log(song.name);
-                                                encore_map[(song.name).toLowerCase()] = (encore_map[(song.name).toLowerCase()]+1) || 1;
+                if(data.setlist) {
+                    data.setlist.forEach(function(sets) {
+                        var actualSet = sets.sets.set;
+                        if(actualSet.length > 0) {
+                            actualSet.forEach(function(songList) {
+                                if(songList.encore) {
+                                    //console.log(songList.song);
+                                    if(songList['song']) {
+                                        songList['song'].forEach(function(song) {
+                                            songList.song.forEach(function(song) {
+                                                    //console.log(song.name);
+                                                    encore_map[(song.name).toLowerCase()] = (encore_map[(song.name).toLowerCase()]+1) || 1;
+                                            });
+                                        })
+                                    }
+                                } else {
+                                    if(songList['song']) {
+                                        songList['song'].forEach(function(song) {
+                                            //console.log(song.name);
+                                            map[(song.name).toLowerCase()] = (map[(song.name).toLowerCase()]+1) || 1;
                                         });
-                                    })
+                                    }
                                 }
-                            } else {
-                                if(songList['song']) {
-                                    songList['song'].forEach(function(song) {
-                                        //console.log(song.name);
-                                        map[(song.name).toLowerCase()] = (map[(song.name).toLowerCase()]+1) || 1;
-                                    });
-                                }
-                            }
-                            console.log();       
-                         });
-                   }
-                });
+                                console.log();       
+                            });
+                        }
+                    });
+                } else {
+                    return res.redirect("/error");
+                }
             }
             console.log(map);
             console.log(encore_map);            
