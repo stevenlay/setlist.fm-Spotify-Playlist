@@ -173,7 +173,7 @@ app.post('/callback', function(req, res) {
         url: url,
         headers: headers
     };
-    
+
     function get_id(err, response, body) {
         body = JSON.parse(body);
         var artist_id = (body.artists.items[0].id);
@@ -311,8 +311,7 @@ app.get('/success', function(req, res) {
     res.render('success');
 });
 
-app.listen(8080, function() {
-    console.log("listening on 8080");
-});
+var port = process.env.PORT || 3000;
+app.listen(port);
 
 
