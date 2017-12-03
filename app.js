@@ -24,6 +24,7 @@ var client_id = client.client_id,
 var payload = new Buffer(spotify_id+":"+spotify_secret).toString("base64");
 var map = {},
     encore_map = {},
+    song_ids = {},
     album_ids = [],
     album_request = "",
     data = [],
@@ -212,7 +213,18 @@ app.post('/callback', function(req, res) {
             };
 
             function get_tracks(err, response, body) {
-                console.log(body);
+                body = JSON.parse(body);
+                var albums = body.albums;
+
+                //iterate through all the albums
+                for (var i = 0; i < albums.length; i++) {
+                    //console.log(albums[i].name);
+                    //console.log(albums[i].length;)
+                    for (var numTrack = 0; numTrack < albums[i].tracks.total; numTrack++) {
+                            console.log(albums[i].tracks.items[numTrack].name);                        
+                    }              
+                }
+                
                 res.render('success');
             };
 
