@@ -73,7 +73,7 @@ app.post("/", function(req, res) {
                                     songList['song'].forEach(function(song) {
                                         songList.song.forEach(function(song) {
                                                 //console.log(song.name);
-                                                encore_map[song.name] = (encore_map[song.name]+1) || 1;
+                                                encore_map[(song.name).toLowerCase()] = (encore_map[(song.name).toLowerCase()]+1) || 1;
                                         });
                                     })
                                 }
@@ -81,7 +81,7 @@ app.post("/", function(req, res) {
                                 if(songList['song']) {
                                     songList['song'].forEach(function(song) {
                                         //console.log(song.name);
-                                        map[song.name] = (map[song.name]+1) || 1;
+                                        map[(song.name).toLowerCase()] = (map[(song.name).toLowerCase()]+1) || 1;
                                     });
                                 }
                             }
@@ -228,8 +228,8 @@ app.post('/callback', function(req, res) {
                     for (var numTrack = 0; numTrack < albums[i].tracks.total; numTrack++) {
                         var track_name = albums[i].tracks.items[numTrack].name;   
                         var track_uri = albums[i].tracks.items[numTrack].uri; 
-                        //console.log(track_name);
-                        song_ids[track_name] = track_uri;              
+                        console.log(track_name);
+                        song_ids[track_name.toLowerCase()] = track_uri;              
                     }              
                 }
                 //console.log(song_ids);
