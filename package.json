@@ -2,9 +2,9 @@
   "name": "setlistspotify",
   "version": "1.0.0",
   "description": "setlist.fm to spotify",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
