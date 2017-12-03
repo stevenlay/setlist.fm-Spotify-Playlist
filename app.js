@@ -221,10 +221,13 @@ app.post('/callback', function(req, res) {
                     //console.log(albums[i].name);
                     //console.log(albums[i].length;)
                     for (var numTrack = 0; numTrack < albums[i].tracks.total; numTrack++) {
-                            console.log(albums[i].tracks.items[numTrack].name);                        
+                        var track_name = albums[i].tracks.items[numTrack].name;   
+                        var track_id = albums[i].tracks.items[numTrack].id; 
+                        //console.log(track_name);
+                        song_ids[track_name] = track_id;              
                     }              
                 }
-                
+                console.log(song_ids);
                 res.render('success');
             };
 
