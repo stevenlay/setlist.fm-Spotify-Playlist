@@ -7,6 +7,9 @@ var express = require('express'),
 'use strict';
 
 app.set("view engine", "ejs");
+app.set('port', (process.env.PORT || 5000));
+app.use(express.static(__dirname + '/public'));
+
 app.use(bodyParser.urlencoded({extended:true}));
 
 var client_id = client.client_id,
@@ -311,7 +314,8 @@ app.get('/success', function(req, res) {
     res.render('success');
 });
 
-var port = process.env.PORT || 3000;
-app.listen(port);
+app.listen(app.get('port'), function() {
+    console.log("Listening on: ", app.get('port'));
+});
 
 
