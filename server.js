@@ -12,11 +12,10 @@ app.use(express.static(__dirname + '/public'));
 
 app.use(bodyParser.urlencoded({extended:true}));
 
-var client_id = "",//client.client_id,
+var spotify_id = process.env.client_id,
     client_secret = "",//client.client_secret,
-    api_key = client.api_key,
-    spotify_id = "",//client.spotify_id,
-    spotify_secret = "",//client.spotify_secret,
+    api_key = process.env.api_key,
+    spotify_secret = process.env.spotify_secret,
     redirect_uri = 'localhost:8080/callback',
     authCode = "",
     auth_token = "";
@@ -104,17 +103,17 @@ app.get("/results", function(req, res) {
     res.render("results", {artist: artist_name, tour: tour, data: data});
 });
 
-app.get('/loginyt', function(req, res) {
-    res.redirect('https://accounts.google.com/o/oauth2/v2/auth?' +
-    querystring.stringify({
-        client_id: client_id,
-        redirect_uri: 'http://localhost:8080/callbackgooglegoogle',
-        scope: 'https://www.googleapis.com/auth/youtube',
-        prompt: 'consent',
-        response_type: 'code',
-        access_type: 'offline'
-    }));
-});
+// app.get('/loginyt', function(req, res) {
+//     res.redirect('https://accounts.google.com/o/oauth2/v2/auth?' +
+//     querystring.stringify({
+//         client_id: client_id,
+//         redirect_uri: 'http://localhost:8080/callbackgooglegoogle',
+//         scope: 'https://www.googleapis.com/auth/youtube',
+//         prompt: 'consent',
+//         response_type: 'code',
+//         access_type: 'offline'
+//     }));
+// });
 
 app.get('/loginspotify', function(req, res) {
     res.redirect('https://accounts.spotify.com/authorize?' +
