@@ -31,6 +31,7 @@ var map = {},
     artist_name = "",
     artist_id,
     user_id,
+    track_uris = [],
     tour = "";
 
 app.get("/", function(req, res) {
@@ -88,7 +89,7 @@ app.post("/", function(req, res) {
                 });
             }
             console.log(map);
-            console.log(encore_map);
+            console.log(encore_map);            
             res.redirect("/results");
         } else {
             console.log("ERROR");
@@ -118,13 +119,14 @@ app.get('/loginspotify', function(req, res) {
     querystring.stringify({
         show_dialog: false,
         client_id: spotify_id,
+        scope: 'playlist-read-private playlist-modify playlist-modify-private',
         response_type: 'code',
         redirect_uri: 'http://localhost:8080/callback'
     }));
 });
 
 app.get('/callbackgoogle', function(req, res) {
-        console.log(req.query.code);
+        //console.log(req.query.code);
         authCode = req.query.code;
         var url = "https://www.googleapis.com";
         url += '/oauth2/v4/token?code=' + authCode + '&client_id=' + client_id + '&client_secret=' + client_secret + '&redirect_uri=http://localhost:8080/callback&grant_type=authorization_code';
@@ -140,7 +142,7 @@ app.get('/callbackgoogle', function(req, res) {
 
 app.get('/callback', function(req, res) {
         authCode = req.query.code;
-        console.log(authCode);
+        //console.log(authCode);
         var headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Accept': 'application/json',
@@ -156,7 +158,7 @@ app.get('/callback', function(req, res) {
         };
         function callback(err, response, body) {
             spotify_token = JSON.parse(body).access_token;
-            console.log("Spotify_TOKEN: " + spotify_token);
+            //console.log("Spotify_TOKEN: " + spotify_token);
             res.render('callback');
         }
         request(options, callback);
@@ -168,7 +170,7 @@ app.post('/callback', function(req, res) {
     };
 
     var url = `https://api.spotify.com/v1/search?q=${artist_name}&type=artist`
-    console.log("URL: " + url);
+    //console.log("URL: " + url);
     var options = {
         url: url,
         headers: headers
@@ -187,7 +189,7 @@ app.post('/callback', function(req, res) {
             console.log("\n");
             console.log("\n");
             console.log("\n");
-            console.log(body);
+            //console.log(body);
             body = JSON.parse(body);
             body.items.forEach(function(item) {
                 var album_type = item.album_type;
@@ -207,7 +209,7 @@ app.post('/callback', function(req, res) {
                 }
             });
             album_request = album_ids.join(",");
-            console.log(album_request);
+            //console.log(album_request);
             var options = {
                 url: 'https://api.spotify.com/v1/albums/?ids=' + album_request,
                 headers: headers
@@ -237,8 +239,48 @@ app.post('/callback', function(req, res) {
                 function get_user(err, response, body) {
                     body = JSON.parse(body);
                     user_id = body.id;
-                    console.log(user_id);
-                    res.render('success');
+                    //console.log(user_id);
+                    
+                    map_uri();
+                    var options = {
+                        url: `https://api.spotify.com/v1/users/${user_id}/playlists`,
+                        headers: headers,
+                        body: JSON.stringify({  "description": `Setlist of ${artist_name}: ${tour}`, 
+                        "public": false,
+                        "name": `${artist_name}: ${tour}`
+                         })
+                    }
+
+                    function add_tracks(err, response, body) {
+                        console.log('Created Playlist');
+                        body = JSON.parse(body);
+                        console.log(body);2
+                        res.render('success');
+                    };
+
+                    request.post(options,add_tracks);
+
+                    
+                    function map_uri() {
+                        console.log("mapped");
+                        for (const [key, value] of Object.entries(map)) {
+                            // do something with `key` and `value`
+                            if(song_ids[key]) {
+                                track_uris.push(song_ids[key]);
+                            }
+                        }
+                        for (const [key, value] of Object.entries(encore_map)) {
+                            // do something with `key` and `value`
+                            if(song_ids[key]) {
+                                track_uris.push(song_ids[key]);
+                            }
+                        }
+                        for (var i = 0; i < track_uris.length; i++) {
+                            //console.log(track_uris[i]);
+                        }
+                        var joined_uris = track_uris.join(",");
+                        console.log(joined_uris);
+                    }
                 }
                 request(options, get_user);
                 
@@ -253,6 +295,13 @@ app.post('/callback', function(req, res) {
     };
     request(options, get_id);
 });
+
+
+
+
+
+
+
 app.get('/error', function(req, res) {
     res.render('error');
 });
