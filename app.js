@@ -274,50 +274,37 @@ app.post('/callback', function(req, res) {
                         }
                         request.post(options, afterwards);
                     };
-
                     request.post(options,add_tracks);
-
-                    
-                    function map_uri() {
-                        console.log("mapped");
-                        for (const [key, value] of Object.entries(map)) {
-                            // do something with `key` and `value`
-                            if(song_ids[key]) {
-                                track_uris.push(song_ids[key]);
-                            }
-                        }
-                        for (const [key, value] of Object.entries(encore_map)) {
-                            // do something with `key` and `value`
-                            if(song_ids[key]) {
-                                track_uris.push(song_ids[key]);
-                            }
-                        }
-                        for (var i = 0; i < track_uris.length; i++) {
-                            //console.log(track_uris[i]);
-                        }
-                        joined_uris = track_uris.join(",");
-                    
-                    }
                 }
-                request(options, get_user);
-                
+                request(options, get_user);             
             };
-
             request(options, get_tracks);
             console.log()
         }
         request(options, get_albums);
-
-  
     };
     request(options, get_id);
 });
 
-
-
-
-
-
+function map_uri() {
+    console.log("mapped");
+    for (const [key, value] of Object.entries(map)) {
+        // do something with `key` and `value`
+        if(song_ids[key]) {
+            track_uris.push(song_ids[key]);
+        }
+    }
+    for (const [key, value] of Object.entries(encore_map)) {
+        // do something with `key` and `value`
+        if(song_ids[key]) {
+            track_uris.push(song_ids[key]);
+        }
+    }
+    for (var i = 0; i < track_uris.length; i++) {
+        //console.log(track_uris[i]);
+    }
+    joined_uris = track_uris.join(",");                 
+}
 
 app.get('/error', function(req, res) {
     res.render('error');
