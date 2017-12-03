@@ -2,7 +2,7 @@ var express = require('express'),
     app = express(),
     request = require('request'),
     querystring = require('querystring'),
-    client = require('./lib/client.js'),
+    //client = require('./lib/client.js'),
     bodyParser = require('body-parser');
 'use strict';
 
@@ -12,11 +12,11 @@ app.use(express.static(__dirname + '/public'));
 
 app.use(bodyParser.urlencoded({extended:true}));
 
-var client_id = client.client_id,
-    client_secret = client.client_secret,
+var client_id = "",//client.client_id,
+    client_secret = "",//client.client_secret,
     api_key = client.api_key,
-    spotify_id = client.spotify_id,
-    spotify_secret = client.spotify_secret,
+    spotify_id = "",//client.spotify_id,
+    spotify_secret = "",//client.spotify_secret,
     redirect_uri = 'localhost:8080/callback',
     authCode = "",
     auth_token = "";
