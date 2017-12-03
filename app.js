@@ -31,7 +31,9 @@ var map = {},
     artist_name = "",
     artist_id,
     user_id,
+    playlist_id,
     track_uris = [],
+    joined_uris;
     tour = "";
 
 app.get("/", function(req, res) {
@@ -254,8 +256,23 @@ app.post('/callback', function(req, res) {
                     function add_tracks(err, response, body) {
                         console.log('Created Playlist');
                         body = JSON.parse(body);
-                        console.log(body);2
-                        res.render('success');
+                        console.log(body);
+                        playlist_id = body.id;
+
+
+                        var options = {
+                            url: `https://api.spotify.com/v1/users/${user_id}/playlists/${playlist_id}/tracks?` +
+                            querystring.stringify({uris: joined_uris}),
+                            headers: headers
+                        }
+
+                        function afterwards(err, response, body) {
+                            console.log(joined_uris);
+                            var body = JSON.parse(body);
+                            console.log(body);
+                            res.render('success');
+                        }
+                        request.post(options, afterwards);
                     };
 
                     request.post(options,add_tracks);
@@ -278,8 +295,8 @@ app.post('/callback', function(req, res) {
                         for (var i = 0; i < track_uris.length; i++) {
                             //console.log(track_uris[i]);
                         }
-                        var joined_uris = track_uris.join(",");
-                        console.log(joined_uris);
+                        joined_uris = track_uris.join(",");
+                    
                     }
                 }
                 request(options, get_user);
