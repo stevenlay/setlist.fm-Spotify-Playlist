@@ -34,7 +34,6 @@ var map = {},
     tour = "";
 
 app.get("/", function(req, res) {
-    map = {}, encore_map = {}
     res.render("search");
 });
 
@@ -60,6 +59,8 @@ app.post("/", function(req, res) {
                 console.log("ERROR CAUGHT");
                 return res.redirect("/error");
             } else {
+                map = {};
+                encore_map = {};
                 if(data.setlist) {
                     data.setlist.forEach(function(sets) {
                         var actualSet = sets.sets.set;
@@ -105,6 +106,18 @@ app.get("/results", function(req, res) {
     res.render("results", {artist: artist_name, tour: tour, data: data});
 });
 
+// app.get('/loginyt', function(req, res) {
+//     res.redirect('https://accounts.google.com/o/oauth2/v2/auth?' +
+//     querystring.stringify({
+//         client_id: client_id,
+//         redirect_uri: 'http://localhost:8080/callbackgooglegoogle',
+//         scope: 'https://www.googleapis.com/auth/youtube',
+//         prompt: 'consent',
+//         response_type: 'code',
+//         access_type: 'offline'
+//     }));
+// });
+
 app.get('/loginspotify', function(req, res) {
     res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
@@ -118,6 +131,7 @@ app.get('/loginspotify', function(req, res) {
 
 app.get('/callback', function(req, res) {
         authCode = req.query.code;
+        //console.log(authCode);
         var headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Accept': 'application/json',
@@ -133,6 +147,7 @@ app.get('/callback', function(req, res) {
         };
         function callback(err, response, body) {
             spotify_token = JSON.parse(body).access_token;
+            //console.log("Spotify_TOKEN: " + spotify_token);
             res.render('callback');
         }
         request(options, callback);
@@ -144,6 +159,7 @@ app.post('/callback', function(req, res) {
     };
 
     var url = `https://api.spotify.com/v1/search?q=${artist_name}&type=artist`
+    //console.log("URL: " + url);
     var options = {
         url: url,
         headers: headers
@@ -162,16 +178,23 @@ app.post('/callback', function(req, res) {
         function get_albums(err, response, body) {
             console.log("\n");
             console.log("\n");
+            console.log("\n");
+            //console.log(body);
             body = JSON.parse(body);
             body.items.forEach(function(item) {
                 var album_type = item.album_type;
                 var artist = item.artists;
 
-                //Adding the id of albums to the list if artist name is identical
                 if(album_type === 'album' && artist[0].name === artist_name) {
+                    //console.log(item.id);
+                    //console.log(item.name);
+                   //album_map[item.id] = item.name;
                    album_ids.push(item.id);
                 }
                 if (album_type === 'single' && artist[0].name === artist_name) {
+                    //console.log(item.id);
+                    //console.log(item.name);
+                    //single_map[item.id] = item.name;
                     album_ids.push(item.id);
                 }
             });
@@ -185,13 +208,13 @@ app.post('/callback', function(req, res) {
             function get_tracks(err, response, body) {
                 body = JSON.parse(body);
                 var albums = body.albums;
-
+                song_ids = {};
                 //iterate through all the albums
                 for (var i = 0; i < albums.length; i++) {
                     //console.log(albums[i].name);
                     //console.log(albums[i].length;)
                     for (var numTrack = 0; numTrack < albums[i].tracks.total; numTrack++) {
-                        var track_name = albums[i].tracks.items[numTrack].name;   
+                        var track_name = albums[i].tracks.items[numTrack].name.replace(/\s*\(.*?\)\s*/g, '');   
                         var track_uri = albums[i].tracks.items[numTrack].uri; 
                         console.log(track_name);
                         song_ids[track_name.toLowerCase()] = track_uri;              
@@ -255,9 +278,19 @@ app.post('/callback', function(req, res) {
 
 function map_uri() {
     console.log("mapped");
-    for (const [key, value] of Object.entries(song_ids)) {
+    joined_uris = ""; 
+    track_uris = [];
+    for (const [key, value] of Object.entries(map)) {
         // do something with `key` and `value`
-            track_uris.push(value);
+        if(song_ids[key]) {
+            track_uris.push(song_ids[key]);
+        }
+    }
+    for (const [key, value] of Object.entries(encore_map)) {
+        // do something with `key` and `value`
+        if(song_ids[key]) {
+            track_uris.push(song_ids[key]);
+        }
     }
     for (var i = 0; i < track_uris.length; i++) {
         console.log(track_uris[i]);
