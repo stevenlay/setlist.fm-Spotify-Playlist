@@ -4,12 +4,10 @@ var express = require('express'),
     querystring = require('querystring'),
     //client = require('./lib/client.js'),
     bodyParser = require('body-parser');
-'use strict';
 
 app.set("view engine", "ejs");
 app.set('port', (process.env.PORT || 5000));
 app.use(express.static(__dirname + '/public'));
-
 app.use(bodyParser.urlencoded({extended:true}));
 
 var spotify_id = process.env.client_id,
@@ -128,20 +126,6 @@ app.get('/loginspotify', function(req, res) {
         response_type: 'code',
         redirect_uri: 'http://localhost:8080/callback'
     }));
-});
-
-app.get('/callbackgoogle', function(req, res) {
-        //console.log(req.query.code);
-        authCode = req.query.code;
-        var url = "https://www.googleapis.com";
-        url += '/oauth2/v4/token?code=' + authCode + '&client_id=' + client_id + '&client_secret=' + client_secret + '&redirect_uri=http://localhost:8080/callback&grant_type=authorization_code';
-        function callback(err, response, body) {
-                //console.log(body);
-                auth_token = JSON.parse(body).access_token;
-                //console.log(auth_token);
-                res.render('callback');
-        }
-        request.post({url: url},callback);
 });
 
 app.get('/callback', function(req, res) {
