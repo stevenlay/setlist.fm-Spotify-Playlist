@@ -11,9 +11,13 @@
     <% data.setlist.forEach(function(sets) { %>
         <% let actualSet = sets.sets.set; %>
         <% let venue = sets.venue.name; %>
-        <h3>
-            <%= venue %>
-        </h3>
+        <% let dateString = sets.eventDate; dateString = dateString.substr(3, 2)+"/"+dateString.substr(0, 2)+"/"+dateString.substr(6, 4); %>
+        <h2>
+            Venue: <%= venue %>
+        </h2>
+        <h4>
+            Date: <%= dateString %> 
+        </h4>
         <% if(actualSet.length > 0) { %>
             <ol>
             <%actualSet.forEach(function(songList) { %>

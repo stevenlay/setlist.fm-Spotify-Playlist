@@ -10,7 +10,7 @@ app.set('port', (process.env.PORT || 8080));
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended:true}));
 
-var spotify_id = process.env.client_id,
+var spotify_id = process.env.client_id || client.spotify_id,
     client_secret = client.client_secret,
     api_key = process.env.api_key || client.api_key,
     spotify_secret = process.env.spotify_secret || client.spotify_secret,
@@ -219,7 +219,7 @@ app.post('/callback', function(req, res) {
                         song_ids[track_name.toLowerCase()] = track_uri;              
                     }              
                 }
-                //console.log(song_ids);
+                console.log(song_ids);
                 var options = {
                     url: 'https://api.spotify.com/v1/me',
                     headers: headers
@@ -234,7 +234,7 @@ app.post('/callback', function(req, res) {
                     var options = {
                         url: `https://api.spotify.com/v1/users/${user_id}/playlists`,
                         headers: headers,
-                        body: JSON.stringify({  "description": `Setlist of ${artist_name}: ${tour}`, 
+                        body: JSON.stringify({  "description": `Setlist of ${artist_name} ${tour}`, 
                         "public": false,
                         "name": `${artist_name}: ${tour}`
                          })
@@ -255,9 +255,11 @@ app.post('/callback', function(req, res) {
 
                         function afterwards(err, response, body) {
                             console.log(joined_uris);
-                            var body = JSON.parse(body);
-                            console.log(body);
-                            res.render('success');
+                            body = JSON.parse(body);
+                            console.log("BODY: " + body);
+                            let playlist = body.external_urls;
+                            console.log("PLAYLIST: " + playlist);
+                            res.render('success', {playlist: playlist});
                         }
                         request.post(options, afterwards);
                     };
@@ -288,9 +290,10 @@ function map_uri() {
         }
     }
     for (var i = 0; i < track_uris.length; i++) {
-        //console.log(track_uris[i]);
+        console.log(track_uris[i]);
     }
-    joined_uris = track_uris.join(",");                 
+    joined_uris = track_uris.join(","); 
+    console.log(joined_uris);                
 }
 
 app.get('/error', function(req, res) {
