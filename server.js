@@ -106,18 +106,6 @@ app.get("/results", function(req, res) {
     res.render("results", {artist: artist_name, tour: tour, data: data});
 });
 
-// app.get('/loginyt', function(req, res) {
-//     res.redirect('https://accounts.google.com/o/oauth2/v2/auth?' +
-//     querystring.stringify({
-//         client_id: client_id,
-//         redirect_uri: 'http://localhost:8080/callbackgooglegoogle',
-//         scope: 'https://www.googleapis.com/auth/youtube',
-//         prompt: 'consent',
-//         response_type: 'code',
-//         access_type: 'offline'
-//     }));
-// });
-
 app.get('/loginspotify', function(req, res) {
     res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
@@ -132,14 +120,14 @@ app.get('/loginspotify', function(req, res) {
 app.get('/callback', function(req, res) {
         authCode = req.query.code;
         //console.log(authCode);
-        var headers = {
+        let headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Accept': 'application/json',
             'Authorization': 'Basic ' + payload
         }
 
-        var dataString = 'grant_type=authorization_code&code=' + authCode + '&redirect_uri=http://localhost:8080/callback';
-        var options = {
+        let dataString = 'grant_type=authorization_code&code=' + authCode + '&redirect_uri=http://localhost:8080/callback';
+        let options = {
             url: 'https://accounts.spotify.com/api/token',
             method: 'POST',
             headers: headers,
@@ -154,23 +142,24 @@ app.get('/callback', function(req, res) {
 });
 
 app.post('/callback', function(req, res) {
-    var headers = {
+    var link = "";
+    let headers = {
         'Authorization': 'Bearer ' + spotify_token
     };
 
-    var url = `https://api.spotify.com/v1/search?q=${artist_name}&type=artist`
+    let url = `https://api.spotify.com/v1/search?q=${artist_name}&type=artist`
     //console.log("URL: " + url);
-    var options = {
+    let options = {
         url: url,
         headers: headers
     };
 
     function get_id(err, response, body) {
         body = JSON.parse(body);
-        var artist_id = (body.artists.items[0].id);
+        let artist_id = (body.artists.items[0].id);
 
 
-        var options = {
+        let options = {
             url: `https://api.spotify.com/v1/artists/${artist_id}/albums`,
             headers: headers
         }
@@ -182,8 +171,8 @@ app.post('/callback', function(req, res) {
             //console.log(body);
             body = JSON.parse(body);
             body.items.forEach(function(item) {
-                var album_type = item.album_type;
-                var artist = item.artists;
+                let album_type = item.album_type;
+                let artist = item.artists;
 
                 if(album_type === 'album' && artist[0].name === artist_name) {
                     //console.log(item.id);
@@ -200,28 +189,31 @@ app.post('/callback', function(req, res) {
             });
             album_request = album_ids.join(",");
             //console.log(album_request);
-            var options = {
+            let options = {
                 url: 'https://api.spotify.com/v1/albums/?ids=' + album_request,
                 headers: headers
             };
 
             function get_tracks(err, response, body) {
                 body = JSON.parse(body);
-                var albums = body.albums;
+                console.log("TRACK BODY");
+                console.log(body);
+                let albums = body.albums;
+                console.log(albums);
                 song_ids = {};
                 //iterate through all the albums
-                for (var i = 0; i < albums.length; i++) {
+                for (let i = 0; i < albums.length; i++) {
                     //console.log(albums[i].name);
                     //console.log(albums[i].length;)
-                    for (var numTrack = 0; numTrack < albums[i].tracks.total; numTrack++) {
-                        var track_name = albums[i].tracks.items[numTrack].name.replace(/\s*\(.*?\)\s*/g, '');   
-                        var track_uri = albums[i].tracks.items[numTrack].uri; 
+                    for (let numTrack = 0; numTrack < albums[i].tracks.total; numTrack++) {
+                        let track_name = albums[i].tracks.items[numTrack].name.replace(/\s*\(.*?\)\s*/g, '');   
+                        let track_uri = albums[i].tracks.items[numTrack].uri; 
                         console.log(track_name);
                         song_ids[track_name.toLowerCase()] = track_uri;              
                     }              
                 }
                 console.log(song_ids);
-                var options = {
+                let options = {
                     url: 'https://api.spotify.com/v1/me',
                     headers: headers
                 };
@@ -232,7 +224,7 @@ app.post('/callback', function(req, res) {
                     //console.log(user_id);
                     
                     map_uri();
-                    var options = {
+                    let options = {
                         url: `https://api.spotify.com/v1/users/${user_id}/playlists`,
                         headers: headers,
                         body: JSON.stringify({  "description": `Setlist of ${artist_name} ${tour}`, 
@@ -245,24 +237,21 @@ app.post('/callback', function(req, res) {
                         console.log('Created Playlist');
                         body = JSON.parse(body);
                         console.log(body);
+                        link = body.external_urls.spotify;
                         playlist_id = body.id;
 
-
-                        var options = {
+                        let options = {
                             url: `https://api.spotify.com/v1/users/${user_id}/playlists/${playlist_id}/tracks?` +
                             querystring.stringify({uris: joined_uris}),
                             headers: headers
                         }
 
-                        function afterwards(err, response, body) {
-                            console.log(joined_uris);
+                        function done(err, response, body) {
                             body = JSON.parse(body);
-                            console.log("BODY: " + body);
-                            let playlist = body.external_urls;
-                            console.log("PLAYLIST: " + playlist);
-                            res.render('success', {playlist: playlist});
+                            console.log(link);
+                            res.render('success', {playlist: link});
                         }
-                        request.post(options, afterwards);
+                        request.post(options, done);
                     };
                     request.post(options,add_tracks);
                 }
@@ -292,7 +281,7 @@ function map_uri() {
             track_uris.push(song_ids[key]);
         }
     }
-    for (var i = 0; i < track_uris.length; i++) {
+    for (let i = 0; i < track_uris.length; i++) {
         console.log(track_uris[i]);
     }
     joined_uris = track_uris.join(","); 
