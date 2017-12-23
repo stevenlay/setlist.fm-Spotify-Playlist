@@ -9,24 +9,30 @@
 <p>
   <%  if(data.setlist) { %>
     <% data.setlist.forEach(function(sets) { %>
-            <% var actualSet = sets.sets.set; %>
-            <% if(actualSet.length > 0) { %>
-                <ol>
-                <%actualSet.forEach(function(songList) { %>
-                    <% if(songList.encore) { %>
+        <% let actualSet = sets.sets.set; %>
+        <% let venue = sets.venue.name; %>
+        <h3>
+            <%= venue %>
+        </h3>
+        <% if(actualSet.length > 0) { %>
+            <ol>
+            <%actualSet.forEach(function(songList) { %>
+                <% if(songList.encore) { %>
+                    <% songList['song'].forEach(function(song) { %>
                         <% songList['song'].forEach(function(song) { %>
-                            <%   songList['song'].forEach(function(song) { %>
-                                <li> <%=   song.name %> </li>
-                            <%  }); %>
+                            <li> <%=   song.name %> </li>
                         <% }); %>
-                    <% } else { %>    
-            <% songList['song'].forEach(function(song) { %>
-                <li><%= song.name %></li>
-            <% }) %> 
+                    <% }); %>
+                <% } else { %>    
+                    <% songList['song'].forEach(function(song) { %>
+                    <li><%= song.name %></li>
+                <% }) %> 
         <% } %>
         <%     }); %>
-        <%   } %>
-            </ol>
+        <%   } else { %>
+               No setlist found. 
+        <%} %>
+        </ol>
             
     <% }); %>
    <% } else { %>

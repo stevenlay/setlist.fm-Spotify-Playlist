@@ -2,18 +2,18 @@ var express = require('express'),
     app = express(),
     request = require('request'),
     querystring = require('querystring'),
-    //client = require('./lib/client.js'),
+    client = require('./lib/client.js'),
     bodyParser = require('body-parser');
 
 app.set("view engine", "ejs");
-app.set('port', (process.env.PORT || 5000));
+app.set('port', (process.env.PORT || 8080));
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended:true}));
 
 var spotify_id = process.env.client_id,
-    client_secret = "",//client.client_secret,
-    api_key = process.env.api_key,
-    spotify_secret = process.env.spotify_secret,
+    client_secret = client.client_secret,
+    api_key = process.env.api_key || client.api_key,
+    spotify_secret = process.env.spotify_secret || client.spotify_secret,
     redirect_uri = 'localhost:8080/callback',
     authCode = "",
     auth_token = "";
@@ -55,7 +55,7 @@ app.post("/", function(req, res) {
     function callback(error, response, body) {
         if (!error) {
             data = JSON.parse(body);
-            console.log(data.message);
+            console.log("Message: "+ JSON.stringify(data));
             if(data.message === 'not found') {
                 console.log("ERROR CAUGHT");
                 return res.redirect("/error");
