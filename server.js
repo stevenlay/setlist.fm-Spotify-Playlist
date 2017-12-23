@@ -105,18 +105,6 @@ app.get("/results", function(req, res) {
     res.render("results", {artist: artist_name, tour: tour, data: data});
 });
 
-// app.get('/loginyt', function(req, res) {
-//     res.redirect('https://accounts.google.com/o/oauth2/v2/auth?' +
-//     querystring.stringify({
-//         client_id: client_id,
-//         redirect_uri: 'http://localhost:8080/callbackgooglegoogle',
-//         scope: 'https://www.googleapis.com/auth/youtube',
-//         prompt: 'consent',
-//         response_type: 'code',
-//         access_type: 'offline'
-//     }));
-// });
-
 app.get('/loginspotify', function(req, res) {
     res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
@@ -130,7 +118,6 @@ app.get('/loginspotify', function(req, res) {
 
 app.get('/callback', function(req, res) {
         authCode = req.query.code;
-        //console.log(authCode);
         var headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Accept': 'application/json',
@@ -146,7 +133,6 @@ app.get('/callback', function(req, res) {
         };
         function callback(err, response, body) {
             spotify_token = JSON.parse(body).access_token;
-            //console.log("Spotify_TOKEN: " + spotify_token);
             res.render('callback');
         }
         request(options, callback);
@@ -158,7 +144,6 @@ app.post('/callback', function(req, res) {
     };
 
     var url = `https://api.spotify.com/v1/search?q=${artist_name}&type=artist`
-    //console.log("URL: " + url);
     var options = {
         url: url,
         headers: headers
@@ -177,23 +162,16 @@ app.post('/callback', function(req, res) {
         function get_albums(err, response, body) {
             console.log("\n");
             console.log("\n");
-            console.log("\n");
-            //console.log(body);
             body = JSON.parse(body);
             body.items.forEach(function(item) {
                 var album_type = item.album_type;
                 var artist = item.artists;
 
+                //Adding the id of albums to the list if artist name is identical
                 if(album_type === 'album' && artist[0].name === artist_name) {
-                    //console.log(item.id);
-                    //console.log(item.name);
-                   //album_map[item.id] = item.name;
                    album_ids.push(item.id);
                 }
                 if (album_type === 'single' && artist[0].name === artist_name) {
-                    //console.log(item.id);
-                    //console.log(item.name);
-                    //single_map[item.id] = item.name;
                     album_ids.push(item.id);
                 }
             });
