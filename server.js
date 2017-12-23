@@ -71,7 +71,6 @@ app.post("/", function(req, res) {
                                     if(songList['song']) {
                                         songList['song'].forEach(function(song) {
                                             songList.song.forEach(function(song) {
-                                                    //console.log(song.name);
                                                     encore_map[(song.name).toLowerCase()] = (encore_map[(song.name).toLowerCase()]+1) || 1;
                                             });
                                         })
@@ -79,7 +78,6 @@ app.post("/", function(req, res) {
                                 } else {
                                     if(songList['song']) {
                                         songList['song'].forEach(function(song) {
-                                            console.log(song.name);
                                             map[(song.name).toLowerCase()] = (map[(song.name).toLowerCase()]+1) || 1;
                                         });
                                     }
@@ -119,7 +117,6 @@ app.get('/loginspotify', function(req, res) {
 
 app.get('/callback', function(req, res) {
         authCode = req.query.code;
-        //console.log(authCode);
         let headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Accept': 'application/json',
@@ -175,20 +172,13 @@ app.post('/callback', function(req, res) {
                 let artist = item.artists;
 
                 if(album_type === 'album' && artist[0].name === artist_name) {
-                    //console.log(item.id);
-                    //console.log(item.name);
-                   //album_map[item.id] = item.name;
                    album_ids.push(item.id);
                 }
                 if (album_type === 'single' && artist[0].name === artist_name) {
-                    //console.log(item.id);
-                    //console.log(item.name);
-                    //single_map[item.id] = item.name;
                     album_ids.push(item.id);
                 }
             });
             album_request = album_ids.join(",");
-            //console.log(album_request);
             let options = {
                 url: 'https://api.spotify.com/v1/albums/?ids=' + album_request,
                 headers: headers
@@ -196,15 +186,12 @@ app.post('/callback', function(req, res) {
 
             function get_tracks(err, response, body) {
                 body = JSON.parse(body);
-                console.log("TRACK BODY");
-                console.log(body);
                 let albums = body.albums;
                 console.log(albums);
                 song_ids = {};
-                //iterate through all the albums
+                //iterate through all the albums and get the track 
+                //need to match track name to be added
                 for (let i = 0; i < albums.length; i++) {
-                    //console.log(albums[i].name);
-                    //console.log(albums[i].length;)
                     for (let numTrack = 0; numTrack < albums[i].tracks.total; numTrack++) {
                         let track_name = albums[i].tracks.items[numTrack].name.replace(/\s*\(.*?\)\s*/g, '');   
                         let track_uri = albums[i].tracks.items[numTrack].uri; 
@@ -221,15 +208,14 @@ app.post('/callback', function(req, res) {
                 function get_user(err, response, body) {
                     body = JSON.parse(body);
                     user_id = body.id;
-                    //console.log(user_id);
-                    
+
                     map_uri();
                     let options = {
                         url: `https://api.spotify.com/v1/users/${user_id}/playlists`,
                         headers: headers,
                         body: JSON.stringify({  "description": `Setlist of ${artist_name} ${tour}`, 
                         "public": false,
-                        "name": `${artist_name}: ${tour}`
+                        "name": `${artist_name} ${tour}`
                          })
                     }
 
@@ -269,23 +255,19 @@ function map_uri() {
     console.log("mapped");
     joined_uris = ""; 
     track_uris = [];
+
+    //if key values match up from song_ids to the map, add to array for playlist
     for (const [key, value] of Object.entries(map)) {
-        // do something with `key` and `value`
         if(song_ids[key]) {
             track_uris.push(song_ids[key]);
         }
     }
     for (const [key, value] of Object.entries(encore_map)) {
-        // do something with `key` and `value`
         if(song_ids[key]) {
             track_uris.push(song_ids[key]);
         }
     }
-    for (let i = 0; i < track_uris.length; i++) {
-        console.log(track_uris[i]);
-    }
-    joined_uris = track_uris.join(","); 
-    console.log(joined_uris);                
+    joined_uris = track_uris.join(",");               
 }
 
 app.get('/error', function(req, res) {
