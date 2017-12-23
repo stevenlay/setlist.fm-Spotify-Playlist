@@ -18,11 +18,9 @@
             <ol>
             <%actualSet.forEach(function(songList) { %>
                 <% if(songList.encore) { %>
-                    <% songList['song'].forEach(function(song) { %>
                         <% songList['song'].forEach(function(song) { %>
-                            <li> <%=   song.name %> </li>
-                        <% }); %>
-                    <% }); %>
+                             <li> <%=   song.name %> </li> 
+                        <% }); %> 
                 <% } else { %>    
                     <% songList['song'].forEach(function(song) { %>
                     <li><%= song.name %></li>

@@ -66,7 +66,7 @@ app.post("/", function(req, res) {
                         if(actualSet.length > 0) {
                             actualSet.forEach(function(songList) {
                                 if(songList.encore) {
-                                    //console.log(songList.song);
+                                    console.log(songList.song);
                                     if(songList['song']) {
                                         songList['song'].forEach(function(song) {
                                             songList.song.forEach(function(song) {
@@ -78,7 +78,7 @@ app.post("/", function(req, res) {
                                 } else {
                                     if(songList['song']) {
                                         songList['song'].forEach(function(song) {
-                                            //console.log(song.name);
+                                            console.log(song.name);
                                             map[(song.name).toLowerCase()] = (map[(song.name).toLowerCase()]+1) || 1;
                                         });
                                     }
