@@ -38,8 +38,6 @@ app.get("/", function(req, res) {
 });
 
 app.post("/", function(req, res) {
-    console.log(req.body.artist);
-    console.log(req.body.tour);
     artist_name = req.body.artist;
     tour = req.body.tour;
     var headers = {
