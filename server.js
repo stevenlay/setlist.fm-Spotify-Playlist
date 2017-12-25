@@ -42,7 +42,6 @@ app.post("/", function(req, res) {
         'Accept-Language': 'en',
         'x-api-key': '249ec1e5-c734-43b4-8c7d-dd651a2c2d37'
     };
-    console.log(api_key);
     var options = {
         url: 'https://api.setlist.fm/rest/1.0/search/setlists?artistName=' + artist_name + '&p=1&tourName=' + req.body.tour,
         headers: headers
