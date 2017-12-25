@@ -40,12 +40,12 @@ app.get("/", function(req, res) {
 app.post("/", function(req, res) {
     artist_name = req.body.artist;
     tour = req.body.tour;
-    var headers = {
+    let headers = {
         'Accept': 'application/json',
         'x-api-key': api_key
     };
     
-    var options = {
+    let options = {
         url: 'https://api.setlist.fm/rest/1.0/search/setlists?artistName=' + artist_name + '&p=1&tourName=' + req.body.tour,
         headers: headers
     };
@@ -61,7 +61,7 @@ app.post("/", function(req, res) {
                 encore_map = {};
                 if(data.setlist) {
                     data.setlist.forEach(function(sets) {
-                        var actualSet = sets.sets.set;
+                        let actualSet = sets.sets.set;
                         if(actualSet.length > 0) {
                             actualSet.forEach(function(songList) {
                                 if(songList.encore) {
