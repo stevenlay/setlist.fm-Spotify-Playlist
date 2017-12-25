@@ -2,7 +2,7 @@ var express = require('express'),
     app = express(),
     request = require('request'),
     querystring = require('querystring'),
-    client = require('./lib/client.js'),
+    //client = require('./lib/client.js'),
     bodyParser = require('body-parser');
 
 app.set("view engine", "ejs");
@@ -11,10 +11,9 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended:true}));
 
 var spotify_id = process.env.client_id || client.spotify_id,
-    client_secret = client.client_secret,
     api_key = process.env.api_key || client.api_key,
     spotify_secret = process.env.spotify_secret || client.spotify_secret,
-    redirect_uri = 'localhost:8080/callback',
+    redirect_uri = 'https://setlistspotify.herokuapp.com/callback',
     authCode = "",
     auth_token = "";
     spotify_token = "";
@@ -109,7 +108,7 @@ app.get('/loginspotify', function(req, res) {
         client_id: spotify_id,
         scope: 'playlist-read-private playlist-modify playlist-modify-private',
         response_type: 'code',
-        redirect_uri: 'http://localhost:8080/callback'
+        redirect_uri: 'https://setlistspotify.herokuapp.com/callback'
     }));
 });
 
@@ -121,7 +120,7 @@ app.get('/callback', function(req, res) {
             'Authorization': 'Basic ' + payload
         }
 
-        let dataString = 'grant_type=authorization_code&code=' + authCode + '&redirect_uri=http://localhost:8080/callback';
+        let dataString = 'grant_type=authorization_code&code=' + authCode + '&redirect_uri=https://setlistspotify.herokuapp.com/callback';
         let options = {
             url: 'https://accounts.spotify.com/api/token',
             method: 'POST',
