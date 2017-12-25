@@ -40,6 +40,7 @@ app.post("/", function(req, res) {
     tour = req.body.tour;
     var headers = {
         'Accept': 'application/json',
+        'Accept-Language': 'en',
         'x-api-key': api_key
     };
     console.log(api_key);
