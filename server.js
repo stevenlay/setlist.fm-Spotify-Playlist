@@ -38,12 +38,12 @@ app.get("/", function(req, res) {
 app.post("/", function(req, res) {
     artist_name = req.body.artist;
     tour = req.body.tour;
-    let headers = {
+    var headers = {
         'Accept': 'application/json',
         'x-api-key': api_key
     };
     console.log(api_key);
-    let options = {
+    var options = {
         url: 'https://api.setlist.fm/rest/1.0/search/setlists?artistName=' + artist_name + '&p=1&tourName=' + req.body.tour,
         headers: headers
     };
@@ -113,14 +113,14 @@ app.get('/loginspotify', function(req, res) {
 
 app.get('/callback', function(req, res) {
         authCode = req.query.code;
-        let headers = {
+        var headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Accept': 'application/json',
             'Authorization': 'Basic ' + payload
         }
 
         let dataString = 'grant_type=authorization_code&code=' + authCode + '&redirect_uri=http://localhost:8080/callback';
-        let options = {
+        var options = {
             url: 'https://accounts.spotify.com/api/token',
             method: 'POST',
             headers: headers,
@@ -142,7 +142,7 @@ app.post('/callback', function(req, res) {
 
     let url = `https://api.spotify.com/v1/search?q=${artist_name}&type=artist`
     //console.log("URL: " + url);
-    let options = {
+    var options = {
         url: url,
         headers: headers
     };
