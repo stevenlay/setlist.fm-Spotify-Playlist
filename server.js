@@ -10,7 +10,6 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended:true}));
 
 var spotify_id = process.env.client_id,
-    api_key = process.env.api_key,
     spotify_secret = process.env.spotify_secret,
     redirect_uri = 'https://setlistspotify.herokuapp.com/callback',
     authCode = "",
@@ -41,7 +40,7 @@ app.post("/", function(req, res) {
     var headers = {
         'Accept': 'application/json',
         'Accept-Language': 'en',
-        'x-api-key': api_key
+        'x-api-key': '249ec1e5-c734-43b4-8c7d-dd651a2c2d37'
     };
     console.log(api_key);
     var options = {
