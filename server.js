@@ -42,7 +42,7 @@ app.post("/", function(req, res) {
         'Accept': 'application/json',
         'x-api-key': api_key
     };
-    
+    console.log(api_key);
     let options = {
         url: 'https://api.setlist.fm/rest/1.0/search/setlists?artistName=' + artist_name + '&p=1&tourName=' + req.body.tour,
         headers: headers
